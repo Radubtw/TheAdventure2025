@@ -24,7 +24,7 @@ public class PlayerObject : RenderableGameObject
         GameOver
     }
 
-    public (PlayerState State, PlayerStateDirection Direction) State { get; private set; }
+    public (PlayerState State, PlayerStateDirection Direction) State { get; set; }
 
     public PlayerObject(SpriteSheet spriteSheet, int x, int y) : base(spriteSheet, (x, y))
     {

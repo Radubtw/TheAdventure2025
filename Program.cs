@@ -28,6 +28,11 @@ public static class Program
             bool quit = false;
             while (!quit)
             {
+                if (engine._gameOver && input.IsKeyRPressed())
+                {
+                    engine = new Engine(gameRenderer, input);
+                    engine.SetupWorld();
+                }
                 quit = input.ProcessInput();
                 if (quit) break;
 

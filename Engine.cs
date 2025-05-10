@@ -17,6 +17,8 @@ public class Engine
     private readonly Dictionary<string, TileSet> _loadedTileSets = new();
     private readonly Dictionary<int, Tile> _tileIdMap = new();
 
+    private int _score;
+    public bool _gameOver;
     private Level _currentLevel = new();
     private PlayerObject? _player;
 
@@ -30,8 +32,15 @@ public class Engine
         _input.OnMouseClick += (_, coords) => AddBomb(coords.x, coords.y);
     }
 
+    //public void Dispose()
+    //{
+    //    _scriptEngine.Dispose();
+    //}
+
     public void SetupWorld()
     {
+        _score = 0;
+        _gameOver = false;
         _player = new(SpriteSheet.Load(_renderer, "Player.json", "Assets"), 100, 100);
 
         var levelContent = File.ReadAllText(Path.Combine("Assets", "terrain.tmj"));
@@ -87,7 +96,7 @@ public class Engine
         {
             return;
         }
-
+        Console.WriteLine("SCORE: " + _score);
         double up = _input.IsUpPressed() ? 1.0 : 0.0;
         double down = _input.IsDownPressed() ? 1.0 : 0.0;
         double left = _input.IsLeftPressed() ? 1.0 : 0.0;
@@ -99,6 +108,44 @@ public class Engine
         if (isAttacking)
         {
             _player.Attack();
+            foreach(var pair in _gameObjects)
+            {
+                TemporaryGameObject bomb = (TemporaryGameObject)pair.Value;
+                switch (_player.State.Direction)
+                {
+                    case PlayerObject.PlayerStateDirection.Up:
+                        if (bomb.Position.Y < _player.Position.Y && Math.Abs(bomb.Position.Y - _player.Position.Y) < 20 &&
+                            Math.Abs(bomb.Position.X - _player.Position.X) < 20)
+                        {
+                            bomb.Position = (bomb.Position.X, bomb.Position.Y - 50);
+                        }
+                        break;
+                    case PlayerObject.PlayerStateDirection.Down:
+                        if (bomb.Position.Y > _player.Position.Y && Math.Abs(bomb.Position.Y - _player.Position.Y) < 20 &&
+                            Math.Abs(bomb.Position.X - _player.Position.X) < 20)
+                        {
+                            bomb.Position = (bomb.Position.X, bomb.Position.Y + 50);
+                        }
+                        break;
+                    case PlayerObject.PlayerStateDirection.Left:
+                        if (bomb.Position.X < _player.Position.X && Math.Abs(bomb.Position.X - _player.Position.X) < 20 &&
+                            Math.Abs(bomb.Position.Y - _player.Position.Y) < 20)
+                        {
+                            bomb.Position = (bomb.Position.X - 50, bomb.Position.Y);
+                        }
+                        break;
+                    case PlayerObject.PlayerStateDirection.Right:
+                        if (bomb.Position.X > _player.Position.X && Math.Abs(bomb.Position.X - _player.Position.X) < 20 &&
+                            Math.Abs(bomb.Position.Y - _player.Position.Y) < 20)
+                        {
+                            bomb.Position = (bomb.Position.X + 50, bomb.Position.Y);
+                        }
+                        break;
+                    case PlayerObject.PlayerStateDirection.None:
+                    default:
+                        break;
+                }
+            }
         }
         
         _scriptEngine.ExecuteAll(this);
@@ -125,34 +172,51 @@ public class Engine
 
     public void RenderAllObjects()
     {
-        var toRemove = new List<int>();
-        foreach (var gameObject in GetRenderables())
+        if (!_gameOver)
         {
-            gameObject.Render(_renderer);
-            if (gameObject is TemporaryGameObject { IsExpired: true } tempGameObject)
+            var toRemove = new List<int>();
+            foreach (var gameObject in GetRenderables())
             {
-                toRemove.Add(tempGameObject.Id);
+                gameObject.Render(_renderer);
+                if (gameObject is TemporaryGameObject { IsExpired: true } tempGameObject)
+                {
+                    toRemove.Add(tempGameObject.Id);
+                    if (_player != null && _player.State.State != PlayerObject.PlayerState.GameOver)
+                    {
+                        _score++;
+                    }
+                }
+            }
+
+            foreach (var id in toRemove)
+            {
+                _gameObjects.Remove(id, out var gameObject);
+
+                if (_player == null)
+                {
+                    continue;
+                }
+
+                var tempGameObject = (TemporaryGameObject)gameObject!;
+                var deltaX = Math.Abs(_player.Position.X - tempGameObject.Position.X);
+                var deltaY = Math.Abs(_player.Position.Y - tempGameObject.Position.Y);
+                if (deltaX < 32 && deltaY < 32)
+                {
+                    _player.GameOver();
+                    _gameOver = true;
+                }
             }
         }
-
-        foreach (var id in toRemove)
-        {
-            _gameObjects.Remove(id, out var gameObject);
-
-            if (_player == null)
-            {
-                continue;
-            }
-
-            var tempGameObject = (TemporaryGameObject)gameObject!;
-            var deltaX = Math.Abs(_player.Position.X - tempGameObject.Position.X);
-            var deltaY = Math.Abs(_player.Position.Y - tempGameObject.Position.Y);
-            if (deltaX < 32 && deltaY < 32)
-            {
-                _player.GameOver();
-            }
-        }
-
+        //else
+        //{
+        //    if(_input.IsKeyRPressed() && _player != null)
+        //    {
+        //        _gameOver = false;
+        //        _player.State = (PlayerObject.PlayerState.Idle, PlayerObject.PlayerStateDirection.None);
+        //        score = 0;
+        //        return;
+        //    }
+        //}
         _player?.Render(_renderer);
     }
 

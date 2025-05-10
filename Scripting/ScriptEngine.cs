@@ -113,7 +113,7 @@ public class ScriptEngine
     {
         Console.WriteLine($"Loading script {file}");
         FileInfo fileInfo = new FileInfo(file);
-        var fileOutput = fileInfo.FullName.Replace(fileInfo.Extension, ".dll");
+        var fileOutput = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName() + ".dll");
         var code = File.ReadAllText(fileInfo.FullName);
         var syntaxTree = CSharpSyntaxTree.ParseText(code);
         var compilation = CSharpCompilation.Create(fileInfo.Name.Replace(fileInfo.Extension, string.Empty),
