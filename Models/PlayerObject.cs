@@ -143,6 +143,8 @@ public class PlayerObject : RenderableGameObject
         {
             SetState(newState, newDirection);
         }
+        Console.WriteLine("X:" + Position.X);
+        Console.WriteLine("Y:" + Position.Y);
 
         Position = (x, y);
     }

@@ -1,0 +1,117 @@
+{
+  "rowCount": 12,
+  "columnCount": 4,
+  "frameWidth": 16,
+  "frameHeight": 32,
+  "frameCenter": {
+    "offsetX": 16,
+    "offsetY": 28
+  },
+  "fileName": "Zombie.png",
+  "animations": {
+    "MoveDown": {
+      "startFrame": {
+        "row": 2,
+        "col": 0
+      },
+      "endFrame": {
+        "row": 2,
+        "col": 3
+      },
+      "durationMs": 600,
+      "loop": true,
+      "flip": 0
+    },
+    "MoveLeft": {
+      "startFrame": {
+        "row": 3,
+        "col": 0
+      },
+      "endFrame": {
+        "row": 3,
+        "col": 3
+      },
+      "durationMs": 600,
+      "loop": true,
+      "flip": 0
+    },
+    "MoveRight": {
+      "startFrame": {
+        "row": 0,
+        "col": 0
+      },
+      "endFrame": {
+        "row": 0,
+        "col": 3
+      },
+      "durationMs": 600,
+      "loop": true,
+      "flip": 0
+    },
+    "MoveUp": {
+      "startFrame": {
+        "row": 1,
+        "col": 0
+      },
+      "endFrame": {
+        "row": 1,
+        "col": 3
+      },
+      "durationMs": 600,
+      "loop": true,
+      "flip": 0
+    },
+    "DeathDown": {
+      "startFrame": {
+        "row": 4,
+        "col": 0
+      },
+      "endFrame": {
+        "row": 4,
+        "col": 3
+      },
+      "durationMs": 400,
+      "loop": false,
+      "flip": 0
+    },
+    "DeathLeft": {
+      "startFrame": {
+        "row": 5,
+        "col": 0
+      },
+      "endFrame": {
+        "row": 5,
+        "col": 3
+      },
+      "durationMs": 400,
+      "loop": false,
+      "flip": 0
+    },
+    "DeathRight": {
+      "startFrame": {
+        "row": 6,
+        "col": 0
+      },
+      "endFrame": {
+        "row": 6,
+        "col": 3
+      },
+      "durationMs": 400,
+      "loop": false,
+      "flip": 0
+    },
+    "DeathUp": {
+      "startFrame": {
+        "row": 7,
+        "col": 0
+      },
+      "endFrame": {
+        "row": 7,
+        "col": 3
+      },
+      "durationMs": 400,
+      "loop": false,
+      "flip": 0
+    }
+  }
+}

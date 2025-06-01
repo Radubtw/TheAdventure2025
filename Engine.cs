@@ -14,6 +14,7 @@ public class Engine
     private readonly ScriptEngine _scriptEngine = new();
 
     private readonly Dictionary<int, GameObject> _gameObjects = new();
+    private readonly Dictionary<int, ZombieObject> _zombieObjects = new();
     private readonly Dictionary<string, TileSet> _loadedTileSets = new();
     private readonly Dictionary<int, Tile> _tileIdMap = new();
 
@@ -100,7 +101,10 @@ public class Engine
         {
             _player.Attack();
         }
-        
+        foreach(var zombie in _zombieObjects)
+        {
+            zombie.Value.UpdatePosition(_player.Position.X, _player.Position.Y, msSinceLastFrame);
+        }
         _scriptEngine.ExecuteAll(this);
 
         if (addBomb)
@@ -138,22 +142,46 @@ public class Engine
         foreach (var id in toRemove)
         {
             _gameObjects.Remove(id, out var gameObject);
-
             if (_player == null)
             {
                 continue;
             }
-
             var tempGameObject = (TemporaryGameObject)gameObject!;
             var deltaX = Math.Abs(_player.Position.X - tempGameObject.Position.X);
             var deltaY = Math.Abs(_player.Position.Y - tempGameObject.Position.Y);
-            if (deltaX < 32 && deltaY < 32)
+            if (deltaX < 50 && deltaY < 50)
+            {
+                _player.GameOver();
+            }
+            foreach (var zombie in _zombieObjects)
+            {
+                var deltaXBomb = Math.Abs(zombie.Value.Position.X - tempGameObject.Position.X);
+                var deltaYBomb = Math.Abs(zombie.Value.Position.Y - tempGameObject.Position.Y);
+                if (deltaXBomb < 50 && deltaYBomb < 50)
+                {
+                    _zombieObjects.Remove(zombie.Key);
+                }
+            }
+        }
+        foreach (var zombie in _zombieObjects)
+        {
+            if (_player == null)
+            {
+                continue;
+            }
+            var deltaXPlayer = Math.Abs(zombie.Value.Position.X - _player.Position.X);
+            var deltaYPlayer = Math.Abs(zombie.Value.Position.Y - _player.Position.Y);
+            if (deltaXPlayer < 10 && deltaYPlayer < 10)
             {
                 _player.GameOver();
             }
         }
 
         _player?.Render(_renderer);
+        foreach(var zombie in _zombieObjects)
+        {
+            zombie.Value?.Render(_renderer);
+        }
     }
 
     public void RenderTerrain()
@@ -214,5 +242,16 @@ public class Engine
 
         TemporaryGameObject bomb = new(spriteSheet, 2.1, (worldCoords.X, worldCoords.Y));
         _gameObjects.Add(bomb.Id, bomb);
+    }
+    public void AddZombie(int X, int Y, bool translateCoordinates = true)
+    {
+        var worldCoords = translateCoordinates ? _renderer.ToWorldCoordinates(X, Y) : new Vector2D<int>(X, Y);
+
+        SpriteSheet spriteSheet = SpriteSheet.Load(_renderer, "Zombie.json", "Assets");
+        spriteSheet.ActivateAnimation("MoveUp");
+
+
+        ZombieObject zombie = new(spriteSheet, worldCoords.X, worldCoords.Y);
+        _zombieObjects.Add(zombie.Id, zombie);
     }
 }

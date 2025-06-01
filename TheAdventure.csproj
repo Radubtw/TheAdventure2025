@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Remove="Assets\Scripts\RandomBomb.script.cs" />
+      <Compile Remove="Assets\Scripts\RandomZombie.script.cs" />
       <ClCompile Include="Assets\Scripts\RandomBomb.script.cs" />
     </ItemGroup>
 
