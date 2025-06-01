@@ -31,12 +31,6 @@ public class Engine
 
         _input.OnMouseClick += (_, coords) => AddBomb(coords.x, coords.y);
     }
-
-    //public void Dispose()
-    //{
-    //    _scriptEngine.Dispose();
-    //}
-
     public void SetupWorld()
     {
         _score = 0;
@@ -207,16 +201,6 @@ public class Engine
                 }
             }
         }
-        //else
-        //{
-        //    if(_input.IsKeyRPressed() && _player != null)
-        //    {
-        //        _gameOver = false;
-        //        _player.State = (PlayerObject.PlayerState.Idle, PlayerObject.PlayerStateDirection.None);
-        //        score = 0;
-        //        return;
-        //    }
-        //}
         _player?.Render(_renderer);
     }
 
